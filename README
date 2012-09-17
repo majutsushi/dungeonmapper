@@ -1,0 +1,15 @@
+Original blog post with code by Ryan Armstrong:
+http://www.zerker.ca/zzone/2010/01/10/dungeon-mapper-0-1-alpha/
+
+Some ideas:
+http://dungeon-map-ed.svn.sourceforge.net/viewvc/dungeon-map-ed/index.html
+
+Arrows : Move cursor
+Page up/Page Down : Next/Previous Dungeon level
+Space : Draw floor
+W, S, A, D : Draw walls (in specified direction)
+X : Draw glyph (stairs up/down icons only so far)
+Q, E : Select wall type
+Z, C : Select glyph type
+F, V : Select floor type
+Plus, Minus : Zoom in and out
