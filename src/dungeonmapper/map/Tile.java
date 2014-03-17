@@ -24,6 +24,7 @@ public class Tile
     private int vertWall;
     private int horizWall;
     private int glyph;
+    private String note;
 
     public Tile()
     {
@@ -31,8 +32,16 @@ public class Tile
         vertWall = 0;
         horizWall = 0;
         glyph = 0;
+        note = "";
     }
 
+    public String getNote() {
+        return note;
+    }
+    
+    public void setNote(String note) {
+        this.note = note;
+    }
 
     public int getFloor() {
         return floor;

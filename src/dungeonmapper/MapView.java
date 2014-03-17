@@ -46,6 +46,7 @@ public class MapView extends javax.swing.JPanel
     private final BufferedImage[] horizwalls = new BufferedImage[60];
     private final BufferedImage[] glyphs = new BufferedImage[Map.glyphTypes];
     private BufferedImage cursor;
+    private BufferedImage note;
 
     private int scale = 16;
     private Map map;
@@ -193,12 +194,13 @@ public class MapView extends javax.swing.JPanel
 
 
         cursor = load_and_scale_image(resourceMap.getImageIcon("Mapping.cursor").getImage(), 0);
+        note = load_and_scale_image(resourceMap.getImageIcon("Mapping.note").getImage(), 0);
     }
 
     private void drawStatus(Graphics2D g2d, int viewWidth)
     {
         g2d.setColor(Color.LIGHT_GRAY);
-        g2d.fillRect(0, 0, viewWidth, 4 * scale);
+        g2d.fillRect(0, 0, viewWidth, 5 * scale);
 
         int row = 0;
         int i = 0;
@@ -251,6 +253,8 @@ public class MapView extends javax.swing.JPanel
                 g2d.drawImage(cursor, i * scale, row * scale, null);
         }
         row++;
+        Tile current = map.getTile(map.getCursorX(), map.getCursorY(), map.getCursorZ());
+        g2d.drawString(String.format("Note : " + current.getNote()), 0, (5 * scale) - 2);
     }
 
     @Override
@@ -267,7 +271,7 @@ public class MapView extends javax.swing.JPanel
         int viewHeight = (int)viewArea.getHeight();
 
         int drawWidth = (viewWidth / scale);
-        int drawHeight = (viewHeight / scale) - 4;
+        int drawHeight = (viewHeight / scale) - 5;
         if (drawWidth > map.getWidth())
             drawWidth = map.getWidth();
         if (drawHeight > map.getHeight())
@@ -365,9 +369,9 @@ public class MapView extends javax.swing.JPanel
             {
                 current = map.getTile(i, j, floor);
                 g2d.drawImage(floors[current.getFloor()],
-                        (i-scrollX) * scale, (j-scrollY+4) * scale, null);
+                        (i-scrollX) * scale, (j-scrollY+5) * scale, null);
                 g2d.drawImage(glyphs[current.getGlyph()],
-                        (i-scrollX) * scale, (j-scrollY+4) * scale, null);
+                        (i-scrollX) * scale, (j-scrollY+5) * scale, null);
             }
 
         // Then draw the walls overtop:
@@ -376,7 +380,11 @@ public class MapView extends javax.swing.JPanel
             {
                 current = map.getTile(i, j, floor);
                 g2d.drawImage(horizwalls[current.getHorizWall()],
-                        (i-scrollX) * scale, ((j-scrollY+4) * scale) + scale/2, null);
+                        (i-scrollX) * scale, ((j-scrollY+5) * scale) + scale/2, null);
+                if (! current.getNote().replace("\n", "").replace("\r", "").trim().equals("")) {
+                    g2d.drawImage(note, (i-scrollX) * scale, (j-scrollY+5) * scale, null);
+                }
+
             }
 
         for (int i=wallX; i<rightX; i++)
@@ -384,13 +392,14 @@ public class MapView extends javax.swing.JPanel
             {
                 current = map.getTile(i, j, floor);
                 g2d.drawImage(walls[current.getVertWall()],
-                        ((i-scrollX) * scale) + scale/2, (j-scrollY+4) * scale, null);
+                        ((i-scrollX) * scale) + scale/2, (j-scrollY+5) * scale, null);
             }
 
         // Finally draw the cursor:
         g2d.drawImage(cursor, (map.getCursorX() - scrollX) * scale,
-                (map.getCursorY() - scrollY + 4) * scale, null);
-
+                (map.getCursorY() - scrollY + 5) * scale, null);
+        
+        
 
         // Default to "true" for next time:
         fullPaint = true;
