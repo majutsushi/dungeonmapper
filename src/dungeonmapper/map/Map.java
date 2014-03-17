@@ -18,6 +18,8 @@
  */
 package dungeonmapper.map;
 
+import dungeonmapper.DungeonMapperApp;
+import dungeonmapper.NoteEditor;
 import java.awt.event.KeyEvent;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,6 +31,7 @@ import java.io.OutputStreamWriter;
 import java.util.Scanner;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import javax.swing.JFrame;
 
 public class Map
 {
@@ -151,6 +154,18 @@ public class Map
     {
         switch (e.getKeyCode())
         {
+            // note
+            case KeyEvent.VK_N:
+                Tile current = tiles[cursorX][cursorY][cursorZ];
+                JFrame mainFrame = DungeonMapperApp.getApplication().getMainFrame();
+                NoteEditor noteEditor = new NoteEditor(mainFrame, true);
+                noteEditor.setNote(current.getNote());
+                noteEditor.setLocationRelativeTo(mainFrame);
+                DungeonMapperApp.getApplication().show(noteEditor);
+                if (noteEditor.getAccepted()) {
+                    current.setNote(noteEditor.getNote());
+                }
+                break;
             // Cursor Movement:
             case KeyEvent.VK_RIGHT:
                 if (cursorX < (width - 1))
@@ -296,6 +311,7 @@ public class Map
     public void saveMap(File savefile) throws IOException
     {
         BufferedWriter mapWriter = new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(savefile))));
+        //BufferedWriter mapWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(savefile)));
 
         mapWriter.write(String.format("%d %d %d", width, height, floors));
         mapWriter.newLine();
@@ -309,15 +325,16 @@ public class Map
                 for (int i = 0; i< width; i++)
                 {
                     temp = tiles[i][j][k];
-                    mapWriter.write(String.format("%d %d %d %d ",
+                    mapWriter.write(String.format("%d %d %d %d",
                             temp.getFloor(),
                             temp.getHorizWall(),
                             temp.getVertWall(),
                             temp.getGlyph()));
+                    mapWriter.newLine();
+                    mapWriter.write(temp.getNote());
+                    mapWriter.newLine();
                 }
-                mapWriter.newLine();
             }
-            mapWriter.newLine();
         }
 
         mapWriter.close();
@@ -329,6 +346,7 @@ public class Map
     public static Map loadMap(File loadfile) throws FileNotFoundException, IOException
     {
         Scanner sc = new Scanner(new GZIPInputStream(new FileInputStream(loadfile)));
+        //Scanner sc = new Scanner(new FileInputStream(loadfile));
 
         int width, height, floors;
 
@@ -352,10 +370,10 @@ public class Map
                     temp.setHorizWall(sc.nextInt());
                     temp.setVertWall(sc.nextInt());
                     temp.setGlyph(sc.nextInt());
+                    sc.nextLine();
+                    temp.setNote(sc.nextLine());
                 }
-                sc.nextLine();
             }
-            sc.nextLine();
         }
 
         sc.close();
